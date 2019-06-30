@@ -5,10 +5,12 @@ Inspired by [Goles/Battery](https://github.com/Goles/Battery)
 ## Features
 * Displays battery percentage
 * Displays battery status with icon and graph bar
-* Changes color to reflect battery status (good, medium, warning)
+* Changes color to reflect battery status (good:Green, medium:Yellow, warning:Red)
 * Specify the good, medium and warning battery status color
+* Output in zsh or tmux format
 
 ## Usage
+### MacOS
 ```
 $ ./go-battery [OPTIONS]
 ```
@@ -35,6 +37,7 @@ Help Options:
 ## License
 This software is released  under the MIT License.  
 
+### Thanks
 [Goles/Battery](https://github.com/Goles/Battery)  
 >The MIT License (MIT)  
 >Copyright (c) 2013 Nicolas Goles Domic  
