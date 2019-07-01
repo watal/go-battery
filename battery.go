@@ -184,13 +184,13 @@ func printStatus(battStat *batteryStatus) {
 		opts.ColorsOption.GoodColor = "green"
 		opts.ColorsOption.MiddleColor = "yellow"
 		opts.ColorsOption.WarnColor = "red"
-		printfCmd = "#[fg=" + *battStat.color + "][" + strconv.Itoa(battStat.percentage) + "%%] " + graph + "#[default]\n"
+		printfCmd = "#[fg=" + *battStat.color + "][" + strconv.Itoa(battStat.percentage) + "%%] " + graph + "#[default]"
 	} else if opts.GeneralOption.OutputZsh {
 		// Set colorname in zsh
 		opts.ColorsOption.GoodColor = "64"
 		opts.ColorsOption.MiddleColor = "136"
 		opts.ColorsOption.WarnColor = "160"
-		printfCmd = "%%B%%F{" + *battStat.color + "}[" + strconv.Itoa(battStat.percentage) + "%%%%] " + graph + "\n"
+		printfCmd = "%%B%%F{" + *battStat.color + "}[" + strconv.Itoa(battStat.percentage) + "%%%%] " + graph
 	} else {
 		printfCmd = "\x1b[" + *battStat.color + "m[" + strconv.Itoa(battStat.percentage) + "%%] " + graph + " \x1b[0m\n"
 	}
