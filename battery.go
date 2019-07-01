@@ -21,6 +21,7 @@ type GeneralOption struct {
     Ascii       bool `short:"a" description:"output ascii instead of spark"`
     BatteryPath bool `short:"b" description:"battery path (default: /sys/class/power_supply/BAT0)"`
     PmsetOn     bool `short:"p" description:"use pmset (more accurate)"`
+    NerdFonts   bool `short:"n" description:"use NerdFonts"`
 }
 
 type ColorsOption struct {
@@ -138,6 +139,19 @@ func printStatus(battStat *batteryStatus) {
 
     if !opts.GeneralOption.Emoji && battStat.connected {
         graph = "\u26a1"
+    } else if opts.GeneralOption.NerdFonts {
+        switch {
+        case battStat.percentage >= 80:
+            graph = "\uf240"
+        case battStat.percentage >= 60:
+            graph = "\uf241"
+        case battStat.percentage >= 40:
+            graph = "\uf242"
+        case battStat.percentage >= 20:
+            graph = "\uf243"
+        default:
+            graph = "\uf244"
+        }
     } else {
         // Get emoji from spark
         sparkCheckCmd := "command -v spark &>/dev/null"
