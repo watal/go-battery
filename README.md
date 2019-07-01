@@ -18,20 +18,23 @@ $ ./go-battery [OPTIONS]
 ## Flags
 ```
 general:
-  -t                output tmux status bar format
-  -z                output zsh prompt format
-  -e                don't output the emoji
-  -a                output ascii instead of spark
-  -b                battery path (default: /sys/class/power_supply/BAT0)
-  -p                use pmset (more accurate)
+  -t                       output tmux status bar format
+  -z                       output zsh prompt format
+  -e                       don't output the emoji
+  -a                       output ascii instead of spark
+  -b                       battery path (default: /sys/class/power_supply/BAT0)
+  -p                       use pmset (more accurate)
+  -n                       use Nerd Fonts battery icon
 
-colors:                                     tmux:    zsh:
-  -g=<color>        good battery level      green  | 64  (default: 32)
-  -m=<color>        middle battery level    yellow | 136 (default: 33)
-  -w=<color>        warn battery level      red    | 160 (default: 31)
+colors:                                            default:  tmux:    zsh:
+  -g=<color>               good battery level      1;32    | green  | 64
+  -m=<color>               middle battery level    1;32    | yellow | 136
+  -w=<color>               warn battery level      0;31    | red    | 160
+  -u=<threshold(%)>        upper threshold (default: 75)
+  -l=<threshold(%)>        lower threshold (default: 25)
 
 Help Options:
-  -h, --help        Show this help message
+  -h, --help               Show this help message
 ```
 
 ## License
