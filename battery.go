@@ -24,9 +24,11 @@ type GeneralOption struct {
 }
 
 type ColorsOption struct {
-    GoodColor   string `short:"g" value-name:"<color>" description:"good battery level      green  | 64 " default:"32"`
-    MiddleColor string `short:"m" value-name:"<color>" description:"middle battery level    yellow | 136" default:"33"`
-    WarnColor   string `short:"w" value-name:"<color>" description:"warn battery level      red    | 160" default:"31"`
+    GoodColor      string `short:"g" value-name:"<color>" description:"good battery level      green  | 64 " default:"32"`
+    MiddleColor    string `short:"m" value-name:"<color>" description:"middle battery level    yellow | 136" default:"33"`
+    WarnColor      string `short:"w" value-name:"<color>" description:"warn battery level      red    | 160" default:"31"`
+    UpperThreshold int `short:"u" value-name:"<threshold(%)>" description:"upper threshold" default:"75"`
+    LowerThreshold int `short:"l" value-name:"<threshold(%)>" description:"lower threshold" default:"25"`
 }
 
 type Options struct {
@@ -44,10 +46,6 @@ type batteryStatus struct {
 
 // Length of opts.GeneralOption.Ascii_bar
 const barLength = 10
-
-// Threshold of color
-const goodThreshold = 75
-const middleThreshold = 25
 
 // Determine battery charge state
 func batteryCharge(battStat *batteryStatus) {
@@ -123,9 +121,9 @@ func batteryCharge(battStat *batteryStatus) {
 
 // Apply the correct color to the battery status prompt
 func applyColors(battStat *batteryStatus) {
-    if battStat.percentage >= goodThreshold {
+    if battStat.percentage >= opts.ColorsOption.UpperThreshold {
         battStat.color = &opts.ColorsOption.GoodColor
-    } else if battStat.percentage >= middleThreshold {
+    } else if battStat.percentage >= opts.ColorsOption.LowerThreshold {
         battStat.color = &opts.ColorsOption.MiddleColor
     } else {
         battStat.color = &opts.ColorsOption.WarnColor
