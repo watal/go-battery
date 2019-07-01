@@ -25,16 +25,16 @@ type GeneralOption struct {
 }
 
 type ColorsOption struct {
-	GoodColor      string `short:"g" value-name:"<color>" description:"good battery level      green  | 64 " default:"32"`
-	MiddleColor    string `short:"m" value-name:"<color>" description:"middle battery level    yellow | 136" default:"33"`
-	WarnColor      string `short:"w" value-name:"<color>" description:"warn battery level      red    | 160" default:"31"`
+	GoodColor      string `short:"g" value-name:"<color>" description:"good battery level      1;32    | green  | 64 "`
+	MiddleColor    string `short:"m" value-name:"<color>" description:"middle battery level    1;32    | yellow | 136"`
+	WarnColor      string `short:"w" value-name:"<color>" description:"warn battery level      0;31    | red    | 160"`
 	UpperThreshold int    `short:"u" value-name:"<threshold(%)>" description:"upper threshold" default:"75"`
 	LowerThreshold int    `short:"l" value-name:"<threshold(%)>" description:"lower threshold" default:"25"`
 }
 
 type Options struct {
 	GeneralOption *GeneralOption `group:"general"`
-	ColorsOption  *ColorsOption  `group:"colors:                                     tmux:    zsh"`
+	ColorsOption  *ColorsOption  `group:"colors:                                            default:  tmux:    zsh"`
 }
 
 var opts Options
@@ -181,17 +181,38 @@ func printStatus(battStat *batteryStatus) {
 	var printfCmd string
 	if opts.GeneralOption.OutputTmux {
 		// Set colorname in tmux
-		opts.ColorsOption.GoodColor = "green"
-		opts.ColorsOption.MiddleColor = "yellow"
-		opts.ColorsOption.WarnColor = "red"
+		if opts.ColorsOption.GoodColor == "" {
+			opts.ColorsOption.GoodColor = "green"
+		}
+		if opts.ColorsOption.MiddleColor == "" {
+			opts.ColorsOption.MiddleColor = "yellow"
+		}
+		if opts.ColorsOption.WarnColor == "" {
+			opts.ColorsOption.WarnColor = "red"
+		}
 		printfCmd = "#[fg=" + *battStat.color + "][" + strconv.Itoa(battStat.percentage) + "%%] " + graph + "#[default]"
 	} else if opts.GeneralOption.OutputZsh {
 		// Set colorname in zsh
-		opts.ColorsOption.GoodColor = "64"
-		opts.ColorsOption.MiddleColor = "136"
-		opts.ColorsOption.WarnColor = "160"
+		if opts.ColorsOption.GoodColor == "" {
+			opts.ColorsOption.GoodColor = "64"
+		}
+		if opts.ColorsOption.MiddleColor == "" {
+			opts.ColorsOption.MiddleColor = "136"
+		}
+		if opts.ColorsOption.WarnColor == "" {
+			opts.ColorsOption.WarnColor = "160"
+		}
 		printfCmd = "%%B%%F{" + *battStat.color + "}[" + strconv.Itoa(battStat.percentage) + "%%%%] " + graph
 	} else {
+		if opts.ColorsOption.GoodColor == "" {
+			opts.ColorsOption.GoodColor = "1;32"
+		}
+		if opts.ColorsOption.MiddleColor == "" {
+			opts.ColorsOption.MiddleColor = "1;33"
+		}
+		if opts.ColorsOption.WarnColor == "" {
+			opts.ColorsOption.WarnColor = "0;31"
+		}
 		printfCmd = "\x1b[" + *battStat.color + "m[" + strconv.Itoa(battStat.percentage) + "%%] " + graph + " \x1b[0m\n"
 	}
 	fmt.Printf(printfCmd)
