@@ -21,7 +21,7 @@ type GeneralOption struct {
 	Ascii       bool `short:"a" description:"output ascii instead of spark"`
 	BatteryPath bool `short:"b" description:"battery path (default: /sys/class/power_supply/BAT0)"`
 	PmsetOn     bool `short:"p" description:"use pmset (more accurate)"`
-	NerdFonts   bool `short:"n" description:"use NerdFonts"`
+	NerdFonts   bool `short:"n" description:"use Nerd Fonts battery icon"`
 }
 
 type ColorsOption struct {
