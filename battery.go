@@ -80,7 +80,7 @@ func batteryCharge(battStat *batteryStatus) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			var ioregInfo map[string]string = map[string]string{}
+			ioregInfo := make(map[string]string, 1)
 			scanner := bufio.NewScanner(strings.NewReader(string(out)))
 			for scanner.Scan() {
 				words := strings.Fields(scanner.Text())
@@ -178,43 +178,35 @@ func printStatus(battStat *batteryStatus) {
 		graph = "[" + strings.Repeat("=", roundedN) + strings.Repeat(" ", barLength-roundedN) + "]"
 	}
 
-	var printfCmd string
-	if opts.GeneralOption.OutputTmux {
-		// Set colorname in tmux
-		if opts.ColorsOption.GoodColor == "" {
-			opts.ColorsOption.GoodColor = "green"
-		}
-		if opts.ColorsOption.MiddleColor == "" {
-			opts.ColorsOption.MiddleColor = "yellow"
-		}
-		if opts.ColorsOption.WarnColor == "" {
-			opts.ColorsOption.WarnColor = "red"
-		}
-		printfCmd = "#[fg=" + *battStat.color + "][" + strconv.Itoa(battStat.percentage) + "%%] " + graph + "#[default]"
-	} else if opts.GeneralOption.OutputZsh {
-		// Set colorname in zsh
-		if opts.ColorsOption.GoodColor == "" {
-			opts.ColorsOption.GoodColor = "64"
-		}
-		if opts.ColorsOption.MiddleColor == "" {
-			opts.ColorsOption.MiddleColor = "136"
-		}
-		if opts.ColorsOption.WarnColor == "" {
-			opts.ColorsOption.WarnColor = "160"
-		}
-		printfCmd = "%%B%%F{" + *battStat.color + "}[" + strconv.Itoa(battStat.percentage) + "%%%%] " + graph
-	} else {
-		if opts.ColorsOption.GoodColor == "" {
-			opts.ColorsOption.GoodColor = "1;32"
-		}
-		if opts.ColorsOption.MiddleColor == "" {
-			opts.ColorsOption.MiddleColor = "1;33"
-		}
-		if opts.ColorsOption.WarnColor == "" {
-			opts.ColorsOption.WarnColor = "0;31"
-		}
-		printfCmd = "\x1b[" + *battStat.color + "m[" + strconv.Itoa(battStat.percentage) + "%%] " + graph + " \x1b[0m\n"
+	type outputOption struct {
+		goodColor   string
+		middleColor string
+		warnColor   string
+		printCmds   [4]string
 	}
+
+	outputOptions := outputOption{}
+
+	if opts.GeneralOption.OutputTmux {
+		outputOptions = outputOption{goodColor: "green", middleColor: "yellow", warnColor: "red", printCmds: [4]string{"#[fg=", "][", "%%] ", "#[default]"}}
+	} else if opts.GeneralOption.OutputZsh {
+		outputOptions = outputOption{goodColor: "64", middleColor: "136", warnColor: "160", printCmds: [4]string{"%%B%%F{", "}[", "%%%%] ", ""}}
+	} else {
+		outputOptions = outputOption{goodColor: "1;32", middleColor: "1;33", warnColor: "0;31", printCmds: [4]string{"\x1b[", "m[", "%%] ", " \x1b[0m\n"}}
+	}
+
+	// Apply format color
+	if opts.ColorsOption.GoodColor == "" {
+		opts.ColorsOption.GoodColor = outputOptions.goodColor
+	}
+	if opts.ColorsOption.MiddleColor == "" {
+		opts.ColorsOption.MiddleColor = outputOptions.middleColor
+	}
+	if opts.ColorsOption.WarnColor == "" {
+		opts.ColorsOption.WarnColor = outputOptions.warnColor
+	}
+
+	printfCmd := outputOptions.printCmds[0] + *battStat.color + outputOptions.printCmds[1] + strconv.Itoa(battStat.percentage) + outputOptions.printCmds[2] + graph + outputOptions.printCmds[3]
 	fmt.Printf(printfCmd)
 }
 
