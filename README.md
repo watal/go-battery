@@ -18,23 +18,24 @@ $ ./go-battery [OPTIONS]
 ## Flags
 ```
 general:
-  -t                       output tmux status bar format
-  -z                       output zsh prompt format
-  -e                       don't output the emoji
-  -a                       output ascii instead of spark
-  -b                       battery path (default: /sys/class/power_supply/BAT0)
-  -p                       use pmset (more accurate)
-  -n                       use Nerd Fonts battery icon
+  -t                                      output tmux status bar format
+  -z                                      output zsh prompt format
+  -e                                      don't output the emoji
+  -a                                      output ascii instead of spark
+  -b                                      battery path (default: /sys/class/power_supply/BAT0)
+  -p                                      use pmset (more accurate)
+  -n                                      use Nerd Fonts battery icon
+  -i={Num(%),Num(%),Num(%),Num(%)}        specify icon's threshold (default: 80, 60, 40, 20)
 
-colors:                                            default:  tmux:    zsh:
-  -g=<color>               good battery level      1;32    | green  | 64
-  -m=<color>               middle battery level    1;32    | yellow | 136
-  -w=<color>               warn battery level      0;31    | red    | 160
-  -u=<threshold(%)>        upper threshold (default: 75)
-  -l=<threshold(%)>        lower threshold (default: 25)
+colors:                                                           default:  tmux:    zsh:
+  -g=<color>                              good battery level      1;32    | green  | 64
+  -m=<color>                              middle battery level    1;32    | yellow | 136
+  -w=<color>                              warn battery level      0;31    | red    | 160
+  -u=<threshold(%)>                       upper threshold (default: 75)
+  -l=<threshold(%)>                       lower threshold (default: 25)
 
 Help Options:
-  -h, --help               Show this help message
+  -h, --help                              Show this help message
 ```
 
 ## License
