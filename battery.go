@@ -15,13 +15,14 @@ import (
 
 // Define args
 type GeneralOption struct {
-	OutputTmux  bool `short:"t" description:"output tmux status bar format"`
-	OutputZsh   bool `short:"z" description:"output zsh prompt format"`
-	Emoji       bool `short:"e" description:"don't output the emoji"`
-	Ascii       bool `short:"a" description:"output ascii instead of spark"`
-	BatteryPath bool `short:"b" description:"battery path (default: /sys/class/power_supply/BAT0)"`
-	PmsetOn     bool `short:"p" description:"use pmset (more accurate)"`
-	NerdFonts   bool `short:"n" description:"use Nerd Fonts battery icon"`
+	OutputTmux     bool  `short:"t" description:"output tmux status bar format"`
+	OutputZsh      bool  `short:"z" description:"output zsh prompt format"`
+	Emoji          bool  `short:"e" description:"don't output the emoji"`
+	Ascii          bool  `short:"a" description:"output ascii instead of spark"`
+	BatteryPath    bool  `short:"b" description:"battery path (default: /sys/class/power_supply/BAT0)"`
+	PmsetOn        bool  `short:"p" description:"use pmset (more accurate)"`
+	NerdFonts      bool  `short:"n" description:"use Nerd Fonts battery icon"`
+	IconsThreshold []int `short:"i" value-name:"{Num(%),Num(%),Num(%),Num(%)}" description:"specify icon's threshold" default:"80" default:"60" default:"40" default:"20"`
 }
 
 type ColorsOption struct {
@@ -34,7 +35,7 @@ type ColorsOption struct {
 
 type Options struct {
 	GeneralOption *GeneralOption `group:"general"`
-	ColorsOption  *ColorsOption  `group:"colors:                                            default:  tmux:    zsh"`
+	ColorsOption  *ColorsOption  `group:"colors:                                                           default:  tmux:    zsh"`
 }
 
 var opts Options
@@ -139,13 +140,13 @@ func printStatus(battStat *batteryStatus) {
 		graph = "\u26a1"
 	} else if opts.GeneralOption.NerdFonts {
 		switch {
-		case battStat.percentage >= 80:
+		case battStat.percentage >= opts.GeneralOption.IconsThreshold[0]:
 			graph = "\uf240"
-		case battStat.percentage >= 60:
+		case battStat.percentage >= opts.GeneralOption.IconsThreshold[1]:
 			graph = "\uf241"
-		case battStat.percentage >= 40:
+		case battStat.percentage >= opts.GeneralOption.IconsThreshold[2]:
 			graph = "\uf242"
-		case battStat.percentage >= 20:
+		case battStat.percentage >= opts.GeneralOption.IconsThreshold[3]:
 			graph = "\uf243"
 		default:
 			graph = "\uf244"
@@ -213,7 +214,7 @@ func printStatus(battStat *batteryStatus) {
 func main() {
 	// Read args
 	_, err := flags.Parse(&opts)
-	if err != nil {
+	if err != nil || len(opts.GeneralOption.IconsThreshold) < 4 {
 		os.Exit(0)
 	}
 
