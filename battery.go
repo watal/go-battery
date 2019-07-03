@@ -75,12 +75,12 @@ func batteryCharge(battStat *batteryStatus) {
 			}
 		} else {
 			// Battery Info by ioreg
-			acCmd := "ioreg -n AppleSmartBattery -r | grep -o '\"[^\"]*\" = [^ ]*' | sed -e 's/= //g' -e 's/\"//g' | sort"
+			acCmd := "ioreg -n AppleSmartBattery -r | grep -o '\"[^\"]*\" = [^ ]*' | sed -e 's/= //g' -e 's/\"//g'"
 			out, err := exec.Command("sh", "-c", acCmd).Output()
 			if err != nil {
 				log.Fatal(err)
 			}
-			ioregInfo := make(map[string]string, 1)
+			ioregInfo := make(map[string]string, 50)
 			scanner := bufio.NewScanner(strings.NewReader(string(out)))
 			for scanner.Scan() {
 				words := strings.Fields(scanner.Text())
