@@ -15,14 +15,14 @@ import (
 
 // Define args
 type GeneralOption struct {
-	OutputTmux     bool  `short:"t" description:"output tmux status bar format"`
-	OutputZsh      bool  `short:"z" description:"output zsh prompt format"`
-	Emoji          bool  `short:"e" description:"don't output the emoji"`
-	Ascii          bool  `short:"a" description:"output ascii instead of spark"`
-	BatteryPath    bool  `short:"b" description:"battery path (default: /sys/class/power_supply/BAT0)"`
-	PmsetOn        bool  `short:"p" description:"use pmset (more accurate)"`
-	NerdFonts      bool  `short:"n" description:"use Nerd Fonts battery icon"`
-	IconsThreshold []int `short:"i" value-name:"{Num(%),Num(%),Num(%),Num(%)}" description:"specify icon's threshold" default:"80" default:"60" default:"40" default:"20"`
+	OutputTmux     bool   `short:"t" description:"output tmux status bar format"`
+	OutputZsh      bool   `short:"z" description:"output zsh prompt format"`
+	Emoji          bool   `short:"e" description:"don't output the emoji"`
+	Ascii          bool   `short:"a" description:"output ascii instead of spark"`
+	BatteryPath    string `short:"b" value-name:"<path>" description:"battery path" default:"/sys/class/power_supply/BAT0"`
+	PmsetOn        bool   `short:"p" description:"use pmset (more accurate)"`
+	NerdFonts      bool   `short:"n" description:"use Nerd Fonts battery icon"`
+	IconsThreshold []int  `short:"i" value-name:"{Num(%),Num(%),Num(%),Num(%)}" description:"specify icon's threshold" default:"80" default:"60" default:"40" default:"20"`
 }
 
 type ColorsOption struct {
@@ -113,8 +113,39 @@ func batteryCharge(battStat *batteryStatus) {
 			}
 		}
 	case "linux":
-		log.Fatalf("this version does not yet support linux")
-		os.Exit(-1)
+		f, err := os.Open(opts.GeneralOption.BatteryPath + "/uevent")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+
+		uevent := make(map[string]string, 20)
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			words := strings.SplitN(scanner.Text(), "=", 2)
+			uevent[words[0]] = words[1]
+		}
+
+		// Battery Connection
+		if uevent["ExternalConnected"] == "Discharging" {
+			battStat.connected = false
+		} else {
+			battStat.connected = true
+		}
+
+		// Battery Percentage
+		maxCapacity := uevent["POWER_SUPPLY_STATUS"]
+		currentCapacity := uevent["POWER_SUPPLY_STATUS"]
+
+		currentCapacityInt, err := strconv.Atoi(currentCapacity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		maxCapacityInt, err := strconv.Atoi(maxCapacity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		battStat.percentage = 100 * currentCapacityInt / maxCapacityInt
 	default:
 		log.Fatalf("this version does not yet support your OS")
 		os.Exit(-1)
