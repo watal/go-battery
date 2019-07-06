@@ -184,10 +184,9 @@ func printStatus(battStat *batteryStatus) {
 		}
 	} else {
 		// Get emoji from spark
-		sparkCheckCmd := "command -v spark &>/dev/null"
-		cmd := exec.Command("sh", "-c", sparkCheckCmd)
-		cmd.Run()
-		if cmd.ProcessState.ExitCode() == 0 {
+		sparkCheckCmd := "command -v spark"
+		_, err := exec.Command("sh", "-c", sparkCheckCmd).Output()
+		if err == nil {
 			sparkCmd := "spark 0 " + strconv.Itoa(battStat.percentage) + " 100"
 			out, err := exec.Command("sh", "-c", sparkCmd).Output()
 			if err != nil {
