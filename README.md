@@ -22,7 +22,7 @@ general:
   -z                                      output zsh prompt format
   -e                                      don't output the emoji
   -a                                      output ascii instead of spark
-  -b                                      battery path (default: /sys/class/power_supply/BAT0)
+  -b=<path>                               battery path (default: /sys/class/power_supply/BAT0)
   -p                                      use pmset (more accurate)
   -n                                      use Nerd Fonts battery icon
   -i={Num(%),Num(%),Num(%),Num(%)}        specify icon's threshold (default: 80, 60, 40, 20)
