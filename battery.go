@@ -127,15 +127,15 @@ func batteryCharge(battStat *batteryStatus) {
 		}
 
 		// Battery Connection
-		if uevent["ExternalConnected"] == "Discharging" {
+		if uevent["POWER_SUPPLY_STATUS"] == "Discharging" {
 			battStat.connected = false
 		} else {
 			battStat.connected = true
 		}
 
 		// Battery Percentage
-		maxCapacity := uevent["POWER_SUPPLY_STATUS"]
-		currentCapacity := uevent["POWER_SUPPLY_STATUS"]
+		maxCapacity := uevent["POWER_SUPPLY_ENERGY_FULL"]
+		currentCapacity := uevent["POWER_SUPPLY_ENERGY_NOW"]
 
 		currentCapacityInt, err := strconv.Atoi(currentCapacity)
 		if err != nil {
